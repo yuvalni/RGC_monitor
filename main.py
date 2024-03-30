@@ -85,7 +85,7 @@ def clear_graph():
     firstStages = []
     secStages = []
 
-    
+
 clear_graph_Btn = QtWidgets.QPushButton("clear graph")
 clear_graph_Btn.clicked.connect(clear_graph)
 SettingsVBOX.addWidget(clear_graph_Btn)
@@ -95,13 +95,26 @@ SettingsVBOX.addWidget(clear_graph_Btn)
 plot_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(plot_layout)
 
-pressure_plot = pg.PlotWidget(symbol='o',symbolBrush=(0,0,200),axisItems = {'bottom': pg.DateAxisItem()})
+pressure_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem(),"units":"psi"})
+pressure_plot.addLegend()
+pressure_plot.setDownsampling(ds=True,auto=True,mode="subsample")
+
 TemperatureA_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
+TemperatureA_plot.setXLink(pressure_plot)
+TemperatureA_plot.addLegend()
+TemperatureA_plot.setDownsampling(ds=True,auto=True,mode="subsample")
+
 TemperatureB_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
+TemperatureB_plot.setXLink(pressure_plot)
+TemperatureB_plot.addLegend()
+TemperatureB_plot.setDownsampling(ds=True,auto=True,mode="subsample")
+
 plot_layout.addWidget(pressure_plot)
-pressure_curve = pressure_plot.plot()
-firstStage_curve = TemperatureA_plot.plot()
-sectStage_curve = TemperatureB_plot.plot()
+
+pressure_curve = pressure_plot.plot(pen=pg.mkPen('k', width=2),symbolBrush=(0,0,0),symbolSize = 5,symbol ='o',name="compressor pressure")
+firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),symbolBrush=(0,0,0),symbolSize = 5,symbol ='p',name="1st stage")
+sectStage_curve = TemperatureB_plot.plot(pen=(0,0,0),symbolBrush=(0,0,0),symbolSize = 5,symbol ='h',name="2nd stage")
+
 plot_layout.addWidget(TemperatureA_plot)
 plot_layout.addWidget(TemperatureB_plot)
 
