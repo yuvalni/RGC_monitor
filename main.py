@@ -8,6 +8,9 @@ from PySide6.QtGui import QBrush,QColor,QTransform
 from PySide6.QtCore import Qt
 
 
+
+
+
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
 
@@ -32,19 +35,24 @@ Hor_layout.addLayout(Ver_layout)
 
 Settings_group = QtWidgets.QGroupBox("Settings")
 Settings_group.setStyleSheet("QGroupBox{font: 12px;}")
-vbox = QtWidgets.QVBoxLayout()
-Settings_group.setLayout(vbox)
+SettingsVBOX = QtWidgets.QVBoxLayout()
+Settings_group.setLayout(SettingsVBOX)
 
-Ver_layout.addWidget(Settings_group)
+
 
 
 monitor_group = QtWidgets.QGroupBox("Monitor")
 monitor_group.setStyleSheet("QGroupBox{font: 12px;}")
-vbox = QtWidgets.QVBoxLayout()
-monitor_group.setLayout(vbox)
+MonitorVbox = QtWidgets.QVBoxLayout()
+monitor_group.setLayout(MonitorVbox)
 Ver_layout.addWidget(monitor_group)
+Ver_layout.addWidget(Settings_group)
 
-
+settings_form = QtWidgets.QFormLayout()
+poll_rate = QtWidgets.QLineEdit()
+poll_rate.setText("3.6")
+settings_form.addRow("polling rate: (s)", poll_rate)
+SettingsVBOX.addLayout(settings_form)
 
 plot_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(plot_layout)
@@ -57,6 +65,30 @@ plot_layout.addWidget(TemperatureA_plot)
 plot_layout.addWidget(TemperatureB_plot)
 
 
+values_form = QtWidgets.QFormLayout()
+pressureValue = QtWidgets.QLineEdit()
+pressureValue.setEnabled(False)
+pressureValue.setText("120")
+values_form.addRow("pressure (psi):", pressureValue)
+
+WaterTemp = QtWidgets.QLineEdit()
+WaterTemp.setEnabled(False)
+WaterTemp.setText("12")
+values_form.addRow("water temp. (C):", WaterTemp)
+
+
+firstStage = QtWidgets.QLineEdit()
+firstStage.setEnabled(False)
+firstStage.setText("41.2")
+values_form.addRow("1st stage (K):", firstStage)
+
+
+secStage = QtWidgets.QLineEdit()
+secStage.setEnabled(False)
+secStage.setText("3.6")
+values_form.addRow("2nd stage (K):", secStage)
+
+MonitorVbox.addLayout(values_form)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -69,5 +101,5 @@ def update_all():
 
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pg.exec()
