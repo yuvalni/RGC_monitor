@@ -46,6 +46,7 @@ monitor_group.setStyleSheet("QGroupBox{font: 12px;}")
 MonitorVbox = QtWidgets.QVBoxLayout()
 monitor_group.setLayout(MonitorVbox)
 Ver_layout.addWidget(monitor_group)
+Ver_layout.addStretch()
 Ver_layout.addWidget(Settings_group)
 
 settings_form = QtWidgets.QFormLayout()
@@ -53,6 +54,9 @@ poll_rate = QtWidgets.QLineEdit()
 poll_rate.setText("3.6")
 settings_form.addRow("polling rate: (s)", poll_rate)
 SettingsVBOX.addLayout(settings_form)
+settingsBtn = QtWidgets.QPushButton("Set")
+SettingsVBOX.addWidget(settingsBtn)
+
 
 plot_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(plot_layout)
