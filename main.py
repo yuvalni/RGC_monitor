@@ -13,23 +13,55 @@ pg.setConfigOption('foreground', 'k')
 
 app = pg.mkQApp("RGC monitor")
 
+
+
+
 win = QtWidgets.QMainWindow()
-win.resize(1600,800)
-win.setWindowTitle('nano-ARPES spatial map')
+win.resize(600,400)
+win.setWindowTitle('RGC monitoring')
 cw = QtWidgets.QWidget()
 win.setCentralWidget(cw)
 
-Hor_layout =  QtWidgets.QHBoxLayout()
 
+
+Hor_layout =  QtWidgets.QHBoxLayout()
 cw.setLayout(Hor_layout)
 
+Ver_layout = QtWidgets.QVBoxLayout()
+Hor_layout.addLayout(Ver_layout)
 
-root = logging.getLogger()
-root.setLevel(logging.DEBUG)
+Settings_group = QtWidgets.QGroupBox("Settings")
+Settings_group.setStyleSheet("QGroupBox{font: 12px;}")
+vbox = QtWidgets.QVBoxLayout()
+Settings_group.setLayout(vbox)
+
+Ver_layout.addWidget(Settings_group)
+
+
+monitor_group = QtWidgets.QGroupBox("Monitor")
+monitor_group.setStyleSheet("QGroupBox{font: 12px;}")
+vbox = QtWidgets.QVBoxLayout()
+monitor_group.setLayout(vbox)
+Ver_layout.addWidget(monitor_group)
+
+
+
+plot_layout = QtWidgets.QVBoxLayout()
+Hor_layout.addLayout(plot_layout)
+
+pressure_plot = pg.PlotWidget()
+TemperatureA_plot = pg.PlotWidget()
+TemperatureB_plot = pg.PlotWidget()
+plot_layout.addWidget(pressure_plot)
+plot_layout.addWidget(TemperatureA_plot)
+plot_layout.addWidget(TemperatureB_plot)
+
+
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
+win.show()
 
 def update_all():
     pass
