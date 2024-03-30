@@ -73,9 +73,22 @@ num_of_points_line.setText(str(num_of_points))
 settings_form.addRow("num. of points: ", num_of_points_line)
 
 SettingsVBOX.addLayout(settings_form)
+
 settingsBtn = QtWidgets.QPushButton("Set")
 settingsBtn.clicked.connect(btn_press)
 SettingsVBOX.addWidget(settingsBtn)
+
+def clear_graph():
+    global pressures,firstStages,secStages,Time
+    Time = []
+    pressures = []
+    firstStages = []
+    secStages = []
+
+    
+clear_graph_Btn = QtWidgets.QPushButton("clear graph")
+clear_graph_Btn.clicked.connect(clear_graph)
+SettingsVBOX.addWidget(clear_graph_Btn)
 
 
 
@@ -137,6 +150,9 @@ Time = []
 pressures = []
 firstStages = []
 secStages = []
+
+
+
 def update_all():
     global pressure_curve,sectStage_curve,firstStage_curve
     if len(Time) > num_of_points:
