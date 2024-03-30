@@ -96,17 +96,17 @@ plot_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(plot_layout)
 
 pressure_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem(),"units":"psi"})
-pressure_plot.addLegend()
+pressure_plot.addLegend(offset=(0,0))
 pressure_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
 TemperatureA_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
 TemperatureA_plot.setXLink(pressure_plot)
-TemperatureA_plot.addLegend()
+TemperatureA_plot.addLegend(offset=(0,0))
 TemperatureA_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
 TemperatureB_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
 TemperatureB_plot.setXLink(pressure_plot)
-TemperatureB_plot.addLegend()
+TemperatureB_plot.addLegend(offset=(0,0))
 TemperatureB_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
 plot_layout.addWidget(pressure_plot)
