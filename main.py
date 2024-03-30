@@ -1,15 +1,26 @@
-from Class.compressor import MockUp
+from Class.compressor import MockUp as Compressor
+from Class.lakeshore import MockUp as LakeShore
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QTimer
 
 
 
 
+rate = 1
+updateTimer = QTimer()
+def btn_press():
+    global rate
+    rate = float(poll_rate.text())
+    updateTimer.setInterval(rate*1000)
+    print(rate)
+
+lakeshore = LakeShore()
+compressor = Compressor() 
 
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
@@ -51,11 +62,13 @@ Ver_layout.addWidget(Settings_group)
 
 settings_form = QtWidgets.QFormLayout()
 poll_rate = QtWidgets.QLineEdit()
-poll_rate.setText("3.6")
+poll_rate.setText(str(rate))
 settings_form.addRow("polling rate: (s)", poll_rate)
 SettingsVBOX.addLayout(settings_form)
 settingsBtn = QtWidgets.QPushButton("Set")
+settingsBtn.clicked.connect(btn_press)
 SettingsVBOX.addWidget(settingsBtn)
+
 
 
 plot_layout = QtWidgets.QVBoxLayout()
@@ -75,22 +88,22 @@ pressureValue.setEnabled(False)
 pressureValue.setText("120")
 values_form.addRow("pressure (psi):", pressureValue)
 
-WaterTemp = QtWidgets.QLineEdit()
-WaterTemp.setEnabled(False)
-WaterTemp.setText("12")
-values_form.addRow("water temp. (C):", WaterTemp)
+WaterTempLine = QtWidgets.QLineEdit()
+WaterTempLine.setEnabled(False)
+WaterTempLine.setText("12")
+values_form.addRow("water temp. (C):", WaterTempLine)
 
 
-firstStage = QtWidgets.QLineEdit()
-firstStage.setEnabled(False)
-firstStage.setText("41.2")
-values_form.addRow("1st stage (K):", firstStage)
+firstStageLine = QtWidgets.QLineEdit()
+firstStageLine.setEnabled(False)
+firstStageLine.setText("41.2")
+values_form.addRow("1st stage (K):", firstStageLine)
 
 
-secStage = QtWidgets.QLineEdit()
-secStage.setEnabled(False)
-secStage.setText("3.6")
-values_form.addRow("2nd stage (K):", secStage)
+secStageLine = QtWidgets.QLineEdit()
+secStageLine.setEnabled(False)
+secStageLine.setText("3.6")
+values_form.addRow("2nd stage (K):", secStageLine)
 
 MonitorVbox.addLayout(values_form)
 
@@ -99,11 +112,27 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 
 win.show()
 
+
+
+
 def update_all():
-    pass
+    pressure = compressor.read_pressure()
+    pressureValue.setText(str(round(pressure,2)))
+
+
+    waterTemp = compressor.read_water_temperature()
+    WaterTempLine.setText(str(round(waterTemp,2)))
+
+    firstStg = lakeshore.TemperatureA()
+    firstStageLine.setText(str(round(firstStg,2)))
+
+    secStg = lakeshore.TemperatureB()
+    secStageLine.setText(str(round(secStg,2)))
 
 
 
 
 if __name__ == "__main__":
+    updateTimer.timeout.connect(update_all)
+    updateTimer.start(rate*1000)
     pg.exec()

@@ -2,18 +2,18 @@
 from time import sleep
 import serial
 import logging
-
+import random
 
 class MockUp():
-    def __init__():
+    def __init__(self):
         print("compressor connected")
     
 
-    def pressure():
-        return 100
+    def read_pressure(self):
+        return 200 + random.random()*10
 
-    def WaterTemperature():
-        return 16
+    def read_water_temperature(self):
+        return 16 + random.random()
 
 
 class compressor():
