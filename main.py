@@ -7,7 +7,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
 from PySide6.QtCore import Qt,QTimer
-
+import time
 
 
 
@@ -74,10 +74,13 @@ SettingsVBOX.addWidget(settingsBtn)
 plot_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(plot_layout)
 
-pressure_plot = pg.PlotWidget()
-TemperatureA_plot = pg.PlotWidget()
-TemperatureB_plot = pg.PlotWidget()
+pressure_plot = pg.PlotWidget(symbol='o',symbolBrush=(0,0,200),axisItems = {'bottom': pg.DateAxisItem()})
+TemperatureA_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
+TemperatureB_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
 plot_layout.addWidget(pressure_plot)
+pressure_curve = pressure_plot.plot()
+firstStage_curve = TemperatureA_plot.plot()
+sectStage_curve = TemperatureB_plot.plot()
 plot_layout.addWidget(TemperatureA_plot)
 plot_layout.addWidget(TemperatureB_plot)
 
@@ -122,21 +125,40 @@ physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", log
                            monitoring_formatter, monitoring_headers, monitoring_backup)
 
 
-
+Time = []
+pressures = []
+firstStages = []
+secStages = []
 def update_all():
+    global pressure_curve,sectStage_curve,firstStage_curve
+    if len(Time) > 1024:
+        Time.pop(0)
+        pressures.pop(0)
+        firstStages.pop(0)
+        secStages.pop(0)
+
+
+    now = time.time()
+    Time.append(now)
+
     pressure = compressor.read_pressure()
     pressureValue.setText(str(round(pressure,2)))
-
+    pressures.append(pressure)
+    pressure_curve.setData(Time,pressures)
 
     waterTemp = compressor.read_water_temperature()
     WaterTempLine.setText(str(round(waterTemp,2)))
 
+
     firstStg = lakeshore.TemperatureA()
     firstStageLine.setText(str(round(firstStg,2)))
+    firstStages.append(firstStg)
+    firstStage_curve.setData(Time,firstStages)
 
     secStg = lakeshore.TemperatureB()
     secStageLine.setText(str(round(secStg,2)))
-
+    secStages.append(secStg)
+    sectStage_curve.setData(Time,secStages)
 
     all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTemp),str(firstStg),str(secStg))
     physLogger.logger.info(all_phys)
