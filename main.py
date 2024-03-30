@@ -2,7 +2,7 @@ from Class.compressor import MockUp as Compressor
 from Class.lakeshore import MockUp as LakeShore
 import logging
 from logging.handlers import TimedRotatingFileHandler
-
+import Class.Loggers as Logs
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
@@ -107,11 +107,19 @@ values_form.addRow("2nd stage (K):", secStageLine)
 
 MonitorVbox.addLayout(values_form)
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
 win.show()
 
+
+
+
+
+monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
+monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
+monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
+physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
+                           monitoring_formatter, monitoring_headers, monitoring_backup)
 
 
 
@@ -128,6 +136,10 @@ def update_all():
 
     secStg = lakeshore.TemperatureB()
     secStageLine.setText(str(round(secStg,2)))
+
+
+    all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTemp),str(firstStg),str(secStg))
+    physLogger.logger.info(all_phys)
 
 
 
