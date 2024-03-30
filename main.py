@@ -12,12 +12,14 @@ import time
 
 
 rate = 1
+num_of_points= 1024*3
 updateTimer = QTimer()
+
 def btn_press():
-    global rate
+    global rate, num_of_points
     rate = float(poll_rate.text())
     updateTimer.setInterval(rate*1000)
-    print(rate)
+    num_of_points = float(num_of_points_line.text())
 
 lakeshore = LakeShore()
 compressor = Compressor() 
@@ -61,9 +63,15 @@ Ver_layout.addStretch()
 Ver_layout.addWidget(Settings_group)
 
 settings_form = QtWidgets.QFormLayout()
+
 poll_rate = QtWidgets.QLineEdit()
 poll_rate.setText(str(rate))
 settings_form.addRow("polling rate: (s)", poll_rate)
+
+num_of_points_line = QtWidgets.QLineEdit()
+num_of_points_line.setText(str(num_of_points))
+settings_form.addRow("num. of points: ", num_of_points_line)
+
 SettingsVBOX.addLayout(settings_form)
 settingsBtn = QtWidgets.QPushButton("Set")
 settingsBtn.clicked.connect(btn_press)
@@ -131,7 +139,7 @@ firstStages = []
 secStages = []
 def update_all():
     global pressure_curve,sectStage_curve,firstStage_curve
-    if len(Time) > 1024:
+    if len(Time) > num_of_points:
         Time.pop(0)
         pressures.pop(0)
         firstStages.pop(0)
