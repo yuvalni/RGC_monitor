@@ -16,8 +16,8 @@ class MockUp():
         return 3.2 + random.random()
     
 
-class lakeshore():
-    def __init__(self, port='COM6', timeout=1): #rate in seconds
+class Lakeshore():
+    def __init__(self, port='COM15', timeout=1): #rate in seconds
         self.logger = logging.getLogger('lakeshore')
         self.port = port
         self.temperatureA = -999
@@ -26,12 +26,14 @@ class lakeshore():
         self.connected = False
         
         try:
-            self.ser = serial.Serial(self.port, timeout=self.timeout, stopbits=serial.STOPBITS_TWO)
-            self.logger.info('Lakeshore is connectd.')
+            self.ser = serial.Serial(self.port,baudrate=57600,parity=serial.PARITY_ODD,bytesize=serial.SEVENBITS, timeout=self.timeout, stopbits=serial.STOPBITS_ONE)
+            print('Lakeshore is connectd.')
+
             self.connected = True
-        except:
+        except Exception as err:
+            print(f"Unexpected {err=}, {type(err)=}")
             self.connected = False
-            self.logger.warning('serial is unable to connect.')
+            print('serial is unable to connect.')
 
         
     
@@ -41,12 +43,12 @@ class lakeshore():
             self.ser.close()
             self.connected = False
         else:
-            self.logger.warning('serial is already closed.')
+            print('serial is already closed.')
 
     def read_TemperatureA(self):
         if not self.connected:
             return False
-        self.ser.write(b'\r\n')
+        self.ser.write(b'KRDG?a\n')
         sleep(30 / 1000)
         temp = str(self.ser.readline(), 'utf-8')
         self.temperatureA = float(temp)
@@ -56,7 +58,7 @@ class lakeshore():
     def read_TemperatureB(self):
         if not self.connected:
             return False
-        self.ser.write(b'\r\n')
+        self.ser.write(b'KRDG?b\n')
         sleep(30 / 1000)
         temp = str(self.ser.readline(), 'utf-8')
         self.temperatureB = float(temp)

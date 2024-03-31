@@ -1,5 +1,5 @@
-from Class.compressor import MockUp as Compressor
-from Class.lakeshore import MockUp as LakeShore
+from Class.compressor import Compressor as Compressor
+from Class.lakeshore import Lakeshore as LakeShore
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import Class.Loggers as Logs
@@ -11,7 +11,7 @@ import time
 
 
 
-rate = 1
+rate = 5
 num_of_points= 1024*3
 updateTimer = QTimer()
 
@@ -125,11 +125,15 @@ pressureValue.setEnabled(False)
 pressureValue.setText("120")
 values_form.addRow("pressure (psi):", pressureValue)
 
-WaterTempLine = QtWidgets.QLineEdit()
-WaterTempLine.setEnabled(False)
-WaterTempLine.setText("12")
-values_form.addRow("water temp. (C):", WaterTempLine)
+WaterTempInLine = QtWidgets.QLineEdit()
+WaterTempInLine.setEnabled(False)
+WaterTempInLine.setText("12")
+values_form.addRow("water temp. in (C):", WaterTempInLine)
 
+WaterTempOutLine = QtWidgets.QLineEdit()
+WaterTempOutLine.setEnabled(False)
+WaterTempOutLine.setText("12")
+values_form.addRow("water temp. out (C):", WaterTempOutLine)
 
 firstStageLine = QtWidgets.QLineEdit()
 firstStageLine.setEnabled(False)
@@ -182,22 +186,22 @@ def update_all():
     pressureValue.setText(str(round(pressure,2)))
     pressures.append(pressure)
     pressure_curve.setData(Time,pressures)
+    He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
+    WaterTempOutLine.setText(str(round(waterTempOut,2)))
+    WaterTempInLine.setText(str(round(waterTempIn, 2)))
 
-    waterTemp = compressor.read_water_temperature()
-    WaterTempLine.setText(str(round(waterTemp,2)))
 
-
-    firstStg = lakeshore.TemperatureA()
+    firstStg = lakeshore.read_TemperatureA()
     firstStageLine.setText(str(round(firstStg,2)))
     firstStages.append(firstStg)
     firstStage_curve.setData(Time,firstStages)
 
-    secStg = lakeshore.TemperatureB()
+    secStg = lakeshore.read_TemperatureB()
     secStageLine.setText(str(round(secStg,2)))
     secStages.append(secStg)
     sectStage_curve.setData(Time,secStages)
 
-    all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTemp),str(firstStg),str(secStg))
+    all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
     physLogger.logger.info(all_phys)
 
 
