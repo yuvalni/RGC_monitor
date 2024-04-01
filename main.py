@@ -1,13 +1,18 @@
-from Class.compressor import Compressor as Compressor
-from Class.lakeshore import Lakeshore as LakeShore
+#from Class.compressor import Compressor as Compressor
+#from Class.lakeshore import Lakeshore as LakeShore
+from Class.compressor import MockUp as Compressor
+from Class.lakeshore import MockUp as LakeShore
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import Class.Loggers as Logs
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
-from PySide6.QtCore import Qt,QTimer
+from PySide6.QtCore import Qt,QTimer,QObject, QThread,Signal
 import time
+from time import sleep
+
+
 
 
 
@@ -22,7 +27,7 @@ def btn_press():
     num_of_points = float(num_of_points_line.text())
 
 lakeshore = LakeShore()
-compressor = Compressor() 
+compressor = Compressor()
 
 pg.setConfigOption('background', 'w')
 pg.setConfigOption('foreground', 'k')
@@ -158,9 +163,9 @@ win.show()
 
 monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
 monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
-monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
-physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
-                           monitoring_formatter, monitoring_headers, monitoring_backup)
+#monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
+#physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
+                           #monitoring_formatter, monitoring_headers, monitoring_backup)
 
 
 Time = []
@@ -169,45 +174,62 @@ firstStages = []
 secStages = []
 
 
+class Worker(QObject):
+    finished = Signal()
 
-def update_all():
-    global pressure_curve,sectStage_curve,firstStage_curve
-    if len(Time) > num_of_points:
-        Time.pop(0)
-        pressures.pop(0)
-        firstStages.pop(0)
-        secStages.pop(0)
-
-
-    now = time.time()
-    Time.append(now)
-
-    pressure = compressor.read_pressure()
-    pressureValue.setText(str(round(pressure,2)))
-    pressures.append(pressure)
-    pressure_curve.setData(Time,pressures)
-    He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
-    WaterTempOutLine.setText(str(round(waterTempOut,2)))
-    WaterTempInLine.setText(str(round(waterTempIn, 2)))
+    def update_all(self):
+        global pressure_curve,sectStage_curve,firstStage_curve
+        global rate
+        while(1):
+            if QThread.currentThread().isInterruptionRequested():
+                break
+            if len(Time) > num_of_points:
+                Time.pop(0)
+                pressures.pop(0)
+                firstStages.pop(0)
+                secStages.pop(0)
 
 
-    firstStg = lakeshore.read_TemperatureA()
-    firstStageLine.setText(str(round(firstStg,2)))
-    firstStages.append(firstStg)
-    firstStage_curve.setData(Time,firstStages)
+            now = time.time()
+            Time.append(now)
 
-    secStg = lakeshore.read_TemperatureB()
-    secStageLine.setText(str(round(secStg,2)))
-    secStages.append(secStg)
-    sectStage_curve.setData(Time,secStages)
+            pressure = compressor.read_pressure()
+            pressureValue.setText(str(round(pressure,2)))
+            pressures.append(pressure)
+            pressure_curve.setData(Time,pressures)
+            He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
+            WaterTempOutLine.setText(str(round(waterTempOut,2)))
+            WaterTempInLine.setText(str(round(waterTempIn, 2)))
 
-    all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
-    physLogger.logger.info(all_phys)
 
+            firstStg = lakeshore.read_TemperatureA()
+            firstStageLine.setText(str(round(firstStg,2)))
+            firstStages.append(firstStg)
+            firstStage_curve.setData(Time,firstStages)
+
+            secStg = lakeshore.read_TemperatureB()
+            secStageLine.setText(str(round(secStg,2)))
+            secStages.append(secStg)
+            sectStage_curve.setData(Time,secStages)
+
+            all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
+            #physLogger.logger.info(all_phys)
+            sleep(rate)
 
 
 
 if __name__ == "__main__":
-    updateTimer.timeout.connect(update_all)
-    updateTimer.start(rate*1000)
+    thread = QThread()
+    worker = Worker()
+    worker.moveToThread(thread)
+    thread.started.connect(worker.update_all)
+    worker.finished.connect(thread.quit)
+    worker.finished.connect(worker.deleteLater)
+    thread.finished.connect(thread.deleteLater)
+    thread.start()
+
+    app.aboutToQuit.connect(thread.quit)
+
+    #updateTimer.timeout.connect(thread.start)
+    #updateTimer.start(rate*1000)
     pg.exec()
