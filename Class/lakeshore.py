@@ -7,14 +7,14 @@ import random
 class MockUp():
     def __init__(self):
         print("keithley connected")
-    
 
-    def TemperatureA(self):
+
+    def read_TemperatureA(self):
         return 41 + random.random()
 
-    def TemperatureB(self):
+    def read_TemperatureB(self):
         return 3.2 + random.random()
-    
+
 
 class Lakeshore():
     def __init__(self, port='COM15', timeout=1): #rate in seconds
@@ -24,7 +24,7 @@ class Lakeshore():
         self.temperatureB = -999
         self.timeout = timeout
         self.connected = False
-        
+
         try:
             self.ser = serial.Serial(self.port,baudrate=57600,parity=serial.PARITY_ODD,bytesize=serial.SEVENBITS, timeout=self.timeout, stopbits=serial.STOPBITS_ONE)
             print('Lakeshore is connectd.')
@@ -35,9 +35,9 @@ class Lakeshore():
             self.connected = False
             print('serial is unable to connect.')
 
-        
-    
-    
+
+
+
     def close(self):
         if self.ser.is_open:
             self.ser.close()
