@@ -127,28 +127,28 @@ plot_layout.addWidget(TemperatureB_plot)
 values_form = QtWidgets.QFormLayout()
 pressureValue = QtWidgets.QLineEdit()
 pressureValue.setEnabled(False)
-pressureValue.setText("120")
+pressureValue.setText("")
 values_form.addRow("pressure (psi):", pressureValue)
 
 WaterTempInLine = QtWidgets.QLineEdit()
 WaterTempInLine.setEnabled(False)
-WaterTempInLine.setText("12")
+WaterTempInLine.setText("")
 values_form.addRow("water temp. in (C):", WaterTempInLine)
 
 WaterTempOutLine = QtWidgets.QLineEdit()
 WaterTempOutLine.setEnabled(False)
-WaterTempOutLine.setText("12")
+WaterTempOutLine.setText("")
 values_form.addRow("water temp. out (C):", WaterTempOutLine)
 
 firstStageLine = QtWidgets.QLineEdit()
 firstStageLine.setEnabled(False)
-firstStageLine.setText("41.2")
+firstStageLine.setText("")
 values_form.addRow("1st stage (K):", firstStageLine)
 
 
 secStageLine = QtWidgets.QLineEdit()
 secStageLine.setEnabled(False)
-secStageLine.setText("3.6")
+secStageLine.setText("")
 values_form.addRow("2nd stage (K):", secStageLine)
 
 MonitorVbox.addLayout(values_form)
