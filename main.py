@@ -1,7 +1,7 @@
-#from Class.compressor import Compressor as Compressor
-#from Class.lakeshore import Lakeshore as LakeShore
-from Class.compressor import MockUp as Compressor
-from Class.lakeshore import MockUp as LakeShore
+from Class.compressor import Compressor as Compressor
+from Class.lakeshore import Lakeshore as LakeShore
+#from Class.compressor import MockUp as Compressor
+#from Class.lakeshore import MockUp as LakeShore
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import Class.Loggers as Logs
@@ -164,9 +164,9 @@ win.show()
 
 monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
 monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
-#monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
-#physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
-                           #monitoring_formatter, monitoring_headers, monitoring_backup)
+monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
+physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
+                           monitoring_formatter, monitoring_headers, monitoring_backup)
 
 
 Time = []
