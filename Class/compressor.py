@@ -49,8 +49,14 @@ class Compressor():
         self.ser.write(b'$PRA95F7\r')
         sleep(30 / 1000)
         string_pressure = str(self.ser.readline(), 'utf-8')
+
         assert string_pressure.split(',')[0] == "$PRA"
         self.pressure = float(float(string_pressure.split(',')[1]))
+
+        self.ser.write(b'$PR171F6\r')
+        sleep(30 / 1000)
+        string_pressure = str(self.ser.readline(), 'utf-8')
+
         return self.pressure
         # print(string) #properly parse the answer
         # return pressure
@@ -62,6 +68,7 @@ class Compressor():
         self.ser.write(b'$TEAA4B9\r')
         sleep(30 / 1000)
         string_Temp = str(self.ser.readline(), 'utf-8')
+
         assert string_Temp.split(',')[0] == "$TEA"
         self.He_Capsule = float(string_Temp.split(',')[1])
         self.WaterTempOut = float(string_Temp.split(',')[2])
