@@ -201,8 +201,8 @@ def update_all():
         pressures.append(pressure)
         try:
             pressure_curve.setData(Time,pressures)
-        except Exception as e:
-            print(e)
+        except Exception:
+            pass
         He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
         WaterTempOutLine.setText(str(round(waterTempOut,2)))
         WaterTempInLine.setText(str(round(waterTempIn, 2)))
@@ -213,16 +213,16 @@ def update_all():
         firstStages.append(firstStg)
         try:
             firstStage_curve.setData(Time,firstStages)
-        except Exception as e:
-            print(e)
+        except Exception:
+            pass
 
         secStg = lakeshore.read_TemperatureB()
         secStageLine.setText(str(round(secStg,2)))
         secStages.append(secStg)
         try:
             sectStage_curve.setData(Time,secStages)
-        except Exception as e:
-            print(e)
+        except Exception:
+            pass
 
 
         all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
