@@ -201,7 +201,7 @@ def update_all():
     secStages.append(secStg)
     sectStage_curve.setData(Time,secStages)
 
-    all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
+    all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
     physLogger.logger.info(all_phys)
 
 
