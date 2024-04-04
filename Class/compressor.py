@@ -7,13 +7,14 @@ import random
 class MockUp():
     def __init__(self):
         print("compressor connected")
-    
+
 
     def read_pressure(self):
+        sleep(0.3)
         return 200 + random.random()*10
 
     def read_water_temperature(self):
-
+        sleep(0.3)
         return (17.5 + random.random(),18 + random.random(),16 + random.random())
 
 
@@ -24,7 +25,7 @@ class Compressor():
         self.pressure = -999
         self.timeout = timeout
         self.connected = False
-        
+
         try:
             self.ser = serial.Serial(self.port, timeout=self.timeout,baudrate=9600)
             print('compressor is connectd.')
@@ -34,8 +35,8 @@ class Compressor():
             print('serial is unable to connect.')
 
         self.pressure = -999.0
-    
-    
+
+
     def close(self):
         if self.ser.is_open:
             self.ser.close()
