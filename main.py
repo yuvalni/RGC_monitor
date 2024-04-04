@@ -141,6 +141,12 @@ WaterTempOutLine.setEnabled(False)
 WaterTempOutLine.setText("")
 values_form.addRow("water temp. out (C):", WaterTempOutLine)
 
+He_capsuleTempLine = QtWidgets.QLineEdit()
+He_capsuleTempLine.setEnabled(False)
+He_capsuleTempLine.setText("")
+values_form.addRow("He capsule temp. (C):", He_capsuleTempLine)
+
+
 firstStageLine = QtWidgets.QLineEdit()
 firstStageLine.setEnabled(False)
 firstStageLine.setText("")
@@ -193,21 +199,30 @@ def update_all():
         pressure = compressor.read_pressure()
         pressureValue.setText(str(round(pressure,2)))
         pressures.append(pressure)
-        pressure_curve.setData(Time,pressures)
+        try:
+            pressure_curve.setData(Time,pressures)
+        except Exception as e:
+            print(e)
         He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
         WaterTempOutLine.setText(str(round(waterTempOut,2)))
         WaterTempInLine.setText(str(round(waterTempIn, 2)))
-
+        He_capsuleTempLine.setText(str(round(He_capsule, 2)))
 
         firstStg = lakeshore.read_TemperatureA()
         firstStageLine.setText(str(round(firstStg,2)))
         firstStages.append(firstStg)
-        firstStage_curve.setData(Time,firstStages)
+        try:
+            firstStage_curve.setData(Time,firstStages)
+        except Exception as e:
+            print(e)
 
         secStg = lakeshore.read_TemperatureB()
         secStageLine.setText(str(round(secStg,2)))
         secStages.append(secStg)
-        sectStage_curve.setData(Time,secStages)
+        try:
+            sectStage_curve.setData(Time,secStages)
+        except Exception as e:
+            print(e)
 
 
         all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
