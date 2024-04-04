@@ -9,6 +9,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
 from PySide6.QtCore import Qt,QTimer,QObject, QThread,Signal
+from threading import Thread
 import time
 from time import sleep
 
@@ -17,7 +18,7 @@ from time import sleep
 
 
 rate = 5
-num_of_points= 1024*3
+num_of_points= 1000
 updateTimer = QTimer()
 
 def btn_press():
@@ -174,62 +175,50 @@ firstStages = []
 secStages = []
 
 
-class Worker(QObject):
-    finished = Signal()
 
-    def update_all(self):
-        global pressure_curve,sectStage_curve,firstStage_curve
-        global rate
-        while(1):
-            if QThread.currentThread().isInterruptionRequested():
-                break
-            if len(Time) > num_of_points:
-                Time.pop(0)
-                pressures.pop(0)
-                firstStages.pop(0)
-                secStages.pop(0)
+def update_all():
+    print("update started")
+    global pressure_curve,sectStage_curve,firstStage_curve
+    while True:
+        if len(Time) > num_of_points:
+            Time.pop(0)
+            pressures.pop(0)
+            firstStages.pop(0)
+            secStages.pop(0)
 
 
-            now = time.time()
-            Time.append(now)
+        now = time.time()
+        Time.append(now)
 
-            pressure = compressor.read_pressure()
-            pressureValue.setText(str(round(pressure,2)))
-            pressures.append(pressure)
-            pressure_curve.setData(Time,pressures)
-            He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
-            WaterTempOutLine.setText(str(round(waterTempOut,2)))
-            WaterTempInLine.setText(str(round(waterTempIn, 2)))
+        pressure = compressor.read_pressure()
+        pressureValue.setText(str(round(pressure,2)))
+        pressures.append(pressure)
+        pressure_curve.setData(Time,pressures)
+        He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
+        WaterTempOutLine.setText(str(round(waterTempOut,2)))
+        WaterTempInLine.setText(str(round(waterTempIn, 2)))
 
 
-            firstStg = lakeshore.read_TemperatureA()
-            firstStageLine.setText(str(round(firstStg,2)))
-            firstStages.append(firstStg)
-            firstStage_curve.setData(Time,firstStages)
+        firstStg = lakeshore.read_TemperatureA()
+        firstStageLine.setText(str(round(firstStg,2)))
+        firstStages.append(firstStg)
+        firstStage_curve.setData(Time,firstStages)
 
-            secStg = lakeshore.read_TemperatureB()
-            secStageLine.setText(str(round(secStg,2)))
-            secStages.append(secStg)
-            sectStage_curve.setData(Time,secStages)
+        secStg = lakeshore.read_TemperatureB()
+        secStageLine.setText(str(round(secStg,2)))
+        secStages.append(secStg)
+        sectStage_curve.setData(Time,secStages)
 
-            all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
-            #physLogger.logger.info(all_phys)
-            sleep(rate)
+        all_phys = "{0} - {1} - {2} - {3}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
+        #physLogger.logger.info(all_phys)
+        sleep(rate)
+
 
 
 
 if __name__ == "__main__":
-    thread = QThread()
-    worker = Worker()
-    worker.moveToThread(thread)
-    thread.started.connect(worker.update_all)
-    worker.finished.connect(thread.quit)
-    worker.finished.connect(worker.deleteLater)
-    thread.finished.connect(thread.deleteLater)
-    thread.start()
-
-    app.aboutToQuit.connect(thread.quit)
-
-    #updateTimer.timeout.connect(thread.start)
+    update_thread = Thread(target=update_all,daemon=True)
+    update_thread.start()
+    #updateTimer.timeout.connect(update_thread.run)
     #updateTimer.start(rate*1000)
     pg.exec()
