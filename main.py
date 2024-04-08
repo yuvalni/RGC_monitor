@@ -101,25 +101,27 @@ SettingsVBOX.addWidget(clear_graph_Btn)
 plot_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(plot_layout)
 
-pressure_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem(),"units":"psi"})
+pressure_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
 pressure_plot.addLegend(offset=(0,0))
-pressure_plot.setDownsampling(ds=True,auto=True,mode="subsample")
+#pressure_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
 TemperatureA_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
 TemperatureA_plot.setXLink(pressure_plot)
 TemperatureA_plot.addLegend(offset=(0,0))
-TemperatureA_plot.setDownsampling(ds=True,auto=True,mode="subsample")
+#TemperatureA_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
 TemperatureB_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
 TemperatureB_plot.setXLink(pressure_plot)
 TemperatureB_plot.addLegend(offset=(0,0))
-TemperatureB_plot.setDownsampling(ds=True,auto=True,mode="subsample")
+#TemperatureB_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
 plot_layout.addWidget(pressure_plot)
 
-pressure_curve = pressure_plot.plot(pen=pg.mkPen('k', width=2),symbolBrush=(0,0,0),symbolSize = 5,symbol ='o',name="compressor pressure")
-firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),symbolBrush=(0,0,0),symbolSize = 5,symbol ='p',name="1st stage")
-sectStage_curve = TemperatureB_plot.plot(pen=(0,0,0),symbolBrush=(0,0,0),symbolSize = 5,symbol ='h',name="2nd stage")
+#pressure_curve = pressure_plot.plot(pen=pg.mkPen('k', width=2),symbolBrush=(0,0,0),symbolSize = 5,symbol ='o',name="compressor pressure")
+pressure_curve = pressure_plot.plot(pen=pg.mkPen('k', width=2),name="compressor pressure")
+#firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),symbolBrush=(0,0,0),symbolSize = 5,symbol ='p',name="1st stage")
+firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),name="1st stage")
+sectStage_curve = TemperatureB_plot.plot(pen=(0,0,0),name="2nd stage")
 
 plot_layout.addWidget(TemperatureA_plot)
 plot_layout.addWidget(TemperatureB_plot)
@@ -185,6 +187,7 @@ secStages = []
 def update_all():
     print("update started")
     global pressure_curve,sectStage_curve,firstStage_curve
+    global Time,pressures,firstStages,secStages
     while True:
         if len(Time) > num_of_points:
             Time.pop(0)
