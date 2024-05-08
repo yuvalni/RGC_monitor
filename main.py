@@ -194,6 +194,7 @@ def update_all():
             pressures.pop(0)
             firstStages.pop(0)
             secStages.pop(0)
+            print(len(Time),len(pressures),len(firstStg))
 
 
         now = time.time()
@@ -204,8 +205,8 @@ def update_all():
         pressures.append(pressure)
         try:
             pressure_curve.setData(Time,pressures)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
         He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
         WaterTempOutLine.setText(str(round(waterTempOut,2)))
         WaterTempInLine.setText(str(round(waterTempIn, 2)))
