@@ -118,7 +118,7 @@ TemperatureB_plot.addLegend(offset=(0,0))
 plot_layout.addWidget(pressure_plot)
 
 #pressure_curve = pressure_plot.plot(pen=pg.mkPen('k', width=2),symbolBrush=(0,0,0),symbolSize = 5,symbol ='o',name="compressor pressure")
-pressure_curve = pressure_plot.plot(pen=pg.mkPen('k', width=2),name="compressor pressure")
+pressure_curve = pressure_plot.plot(pen=(0,0,0),name="compressor pressure")
 #firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),symbolBrush=(0,0,0),symbolSize = 5,symbol ='p',name="1st stage")
 firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),name="1st stage")
 sectStage_curve = TemperatureB_plot.plot(pen=(0,0,0),name="2nd stage")
