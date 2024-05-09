@@ -51,14 +51,17 @@ class Compressor():
         sleep(30 / 1000)
         string_pressure = str(self.ser.readline(), 'utf-8')
 
-        assert string_pressure.split(',')[0] == "$PRA"
-        self.pressure = float(float(string_pressure.split(',')[1]))
+        if(string_pressure.split(',')[0] == "$PRA"):
+            self.pressure = float(float(string_pressure.split(',')[1]))
 
-        self.ser.write(b'$PR171F6\r')
-        sleep(30 / 1000)
-        string_pressure = str(self.ser.readline(), 'utf-8')
+            #self.ser.write(b'$PR171F6\r')
+            #sleep(30 / 1000)
+            #string_pressure = str(self.ser.readline(), 'utf-8')
 
-        return self.pressure
+            return self.pressure
+        else:
+            print('something is wrong.')
+            return -999
         # print(string) #properly parse the answer
         # return pressure
 
@@ -70,8 +73,11 @@ class Compressor():
         sleep(30 / 1000)
         string_Temp = str(self.ser.readline(), 'utf-8')
 
-        assert string_Temp.split(',')[0] == "$TEA"
-        self.He_Capsule = float(string_Temp.split(',')[1])
-        self.WaterTempOut = float(string_Temp.split(',')[2])
-        self.WaterTempIn = float(string_Temp.split(',')[3])
-        return (self.He_Capsule,self.WaterTempOut,self.WaterTempIn)
+        if(string_Temp.split(',')[0] == "$TEA"):
+            self.He_Capsule = float(string_Temp.split(',')[1])
+            self.WaterTempOut = float(string_Temp.split(',')[2])
+            self.WaterTempIn = float(string_Temp.split(',')[3])
+            return (self.He_Capsule,self.WaterTempOut,self.WaterTempIn)
+        else:
+            print('something is wrong')
+            return (-999,-999,-999)

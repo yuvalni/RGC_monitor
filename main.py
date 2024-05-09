@@ -52,6 +52,22 @@ cw.setLayout(Hor_layout)
 Ver_layout = QtWidgets.QVBoxLayout()
 Hor_layout.addLayout(Ver_layout)
 
+
+LED = QtWidgets.QRadioButton()
+LED.setEnabled(False)
+LED.setText("Reading")
+LED.setStyleSheet("QRadioButton::indicator:checked"
+                                   "{"
+                                   "background-color : lightgreen"
+                                   "}"
+                  "QRadioButton::indicator:unchecked"
+                  "{"
+                  "background-color : red"
+                  "}"
+                  )
+
+Ver_layout.addWidget(LED)
+
 Settings_group = QtWidgets.QGroupBox("Settings")
 Settings_group.setStyleSheet("QGroupBox{font: 12px;}")
 SettingsVBOX = QtWidgets.QVBoxLayout()
@@ -188,50 +204,56 @@ def update_all():
     print("update started")
     global pressure_curve,sectStage_curve,firstStage_curve
     global Time,pressures,firstStages,secStages
+    global LED
     while True:
+        LED.setChecked(True)
         if len(Time) > num_of_points:
             Time.pop(0)
             pressures.pop(0)
             firstStages.pop(0)
             secStages.pop(0)
-            print(len(Time),len(pressures),len(firstStg))
 
 
         now = time.time()
         Time.append(now)
-
+        LED.setChecked(True)
         pressure = compressor.read_pressure()
+        LED.setChecked(False)
         pressureValue.setText(str(round(pressure,2)))
         pressures.append(pressure)
         try:
             pressure_curve.setData(Time,pressures)
         except Exception as e:
             print(e)
+        LED.setChecked(True)
         He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
+        LED.setChecked(False)
         WaterTempOutLine.setText(str(round(waterTempOut,2)))
         WaterTempInLine.setText(str(round(waterTempIn, 2)))
         He_capsuleTempLine.setText(str(round(He_capsule, 2)))
-
+        LED.setChecked(True)
         firstStg = lakeshore.read_TemperatureA()
+        LED.setChecked(False)
         firstStageLine.setText(str(round(firstStg,2)))
         firstStages.append(firstStg)
         try:
             firstStage_curve.setData(Time,firstStages)
-        except Exception:
-            pass
-
+        except Exception as e:
+            print(e)
+        LED.setChecked(True)
         secStg = lakeshore.read_TemperatureB()
+        LED.setChecked(False)
         secStageLine.setText(str(round(secStg,2)))
         secStages.append(secStg)
         try:
             sectStage_curve.setData(Time,secStages)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
 
         all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
         physLogger.logger.info(all_phys)
-
+        LED.setChecked(False)
         sleep(rate)
 
 
