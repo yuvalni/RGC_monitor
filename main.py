@@ -13,6 +13,7 @@ from threading import Thread, Lock
 import time
 from time import sleep
 
+import datetime
 
 
 
@@ -243,6 +244,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
             #physLogger.logger.info(all_phys)
             self.LED.setChecked(False)
+            self.LED.setText(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             self.vector_lock.release()
             self.update_graph_signal.emit()            
             sleep(self.rate)
