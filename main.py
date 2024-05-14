@@ -8,9 +8,8 @@ import Class.Loggers as Logs
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
-from PySide6.QtCore import Qt,QTimer,QObject, QThread,Signal,Slot
-
-from threading import Thread
+from PySide6.QtCore import Qt,QTimer,QObject, QThread,Signal
+from threading import Thread, Lock
 import time
 from time import sleep
 
@@ -22,6 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.vector_lock = Lock()
         pg.setConfigOption('background', 'w')
         pg.setConfigOption('foreground', 'k')
         self.lakeshore = LakeShore()
@@ -179,19 +179,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.num_of_points = float(self.num_of_points_line.text())
 
     def clear_graph(self):
+        self.vector_lock.acquire()
         self.Time = []
         self.pressures = []
         self.firstStages = []
         self.secStages = []
+        self.vector_lock.release()
 
 
     def update_graph(self):
+        self.vector_lock.acquire()
         try:
             self.pressure_curve.setData(self.Time,self.pressures)
             self.firstStage_curve.setData(self.Time,self.firstStages)
             self.sectStage_curve.setData(self.Time,self.secStages)
         except Exception as e:
             print(e)
+        self.vector_lock.release()
 
 
 
@@ -200,6 +204,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def update_all(self):
         print("update started")
         while True:
+            self.vector_lock.acquire()
             self.LED.setChecked(True)
             if len(self.Time) > self.num_of_points:
                 self.Time.pop(0)
@@ -238,7 +243,8 @@ class MainWindow(QtWidgets.QMainWindow):
             #all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
             #physLogger.logger.info(all_phys)
             self.LED.setChecked(False)
-            self.update_graph_signal.emit()
+            self.vector_lock.release()
+            self.update_graph_signal.emit()            
             sleep(self.rate)
 
 
