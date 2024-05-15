@@ -206,7 +206,7 @@ class MainWindow(QtWidgets.QMainWindow):
         print("update started")
         while True:
             self.vector_lock.acquire()
-            self.LED.setChecked(True)
+            self.LED.setChecked(False)
             if len(self.Time) > self.num_of_points:
                 self.Time.pop(0)
                 self.pressures.pop(0)
@@ -243,7 +243,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
             all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
             self.physLogger.logger.info(all_phys)
-            self.LED.setChecked(False)
+            self.LED.setChecked(True)
             self.LED.setText(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             self.vector_lock.release()
             self.update_graph_signal.emit()
