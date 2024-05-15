@@ -1,7 +1,7 @@
-#from Class.compressor import Compressor as Compressor
-#from Class.lakeshore import Lakeshore as LakeShore
-from Class.compressor import MockUp as Compressor
-from Class.lakeshore import MockUp as LakeShore
+from Class.compressor import Compressor as Compressor
+from Class.lakeshore import Lakeshore as LakeShore
+#from Class.compressor import MockUp as Compressor
+#from Class.lakeshore import MockUp as LakeShore
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import Class.Loggers as Logs
@@ -37,11 +37,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         self.update_graph_signal.connect(self.update_graph)
-        #self.monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
-        #self.monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
-        #self.monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
-        #self.physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
-        #                       monitoring_formatter, monitoring_headers, monitoring_backup)
+        self.monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
+        self.monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
+        self.monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
+        self.physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
+                               monitoring_formatter, monitoring_headers, monitoring_backup)
 
         self.createLayout()
 
@@ -241,8 +241,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.secStages.append(secStg)
 
 
-            #all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
-            #physLogger.logger.info(all_phys)
+            all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
+            self.physLogger.logger.info(all_phys)
             self.LED.setChecked(False)
             self.LED.setText(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             self.vector_lock.release()
