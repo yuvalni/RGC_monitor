@@ -9,7 +9,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtWidgets
 from PySide6.QtGui import QBrush,QColor,QTransform
 from PySide6.QtCore import Qt,QTimer,QObject, QThread,Signal
-from threading import Thread
+from threading import Thread,currentThread
 import time
 from time import sleep
 
@@ -213,7 +213,6 @@ def update_all():
             firstStages.pop(0)
             secStages.pop(0)
 
-
         now = time.time()
         Time.append(now)
         LED.setChecked(True)
@@ -221,10 +220,7 @@ def update_all():
         LED.setChecked(False)
         pressureValue.setText(str(round(pressure,2)))
         pressures.append(pressure)
-        try:
-            pressure_curve.setData(Time,pressures)
-        except Exception as e:
-            print(e)
+
         LED.setChecked(True)
         He_capsule,waterTempOut,waterTempIn = compressor.read_water_temperature()
         LED.setChecked(False)
@@ -236,30 +232,32 @@ def update_all():
         LED.setChecked(False)
         firstStageLine.setText(str(round(firstStg,2)))
         firstStages.append(firstStg)
-        try:
-            firstStage_curve.setData(Time,firstStages)
-        except Exception as e:
-            print(e)
         LED.setChecked(True)
         secStg = lakeshore.read_TemperatureB()
         LED.setChecked(False)
         secStageLine.setText(str(round(secStg,2)))
         secStages.append(secStg)
-        try:
-            sectStage_curve.setData(Time,secStages)
-        except Exception as e:
-            print(e)
+
 
 
         all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
         physLogger.logger.info(all_phys)
         LED.setChecked(False)
+
         sleep(rate)
 
 
 
 
-
+def update_graph():
+        global pressures,firstStages,secStages,Time
+        print('Thread ={}          Function = update_graph()'.format(currentThread().getName()))
+        try:
+            sectStage_curve.setData(Time,secStages)
+            firstStage_curve.setData(Time,firstStages)
+            pressure_curve.setData(Time,pressures)
+        except Exception as e:
+            print(e)
 if __name__ == "__main__":
     update_thread = Thread(target=update_all,daemon=True)
     update_thread.start()
