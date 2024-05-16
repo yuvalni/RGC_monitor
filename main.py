@@ -176,8 +176,12 @@ class MainWindow(QtWidgets.QMainWindow):
         MonitorVbox.addLayout(values_form)
 
     def btn_press(self):
+        self.vector_lock.acquire()
         self.rate = float(self.poll_rate.text())
-        self.num_of_points = float(self.num_of_points_line.text())
+        self.num_of_points = int(self.num_of_points_line.text())
+        print(self.rate)
+        print(self.num_of_points)
+        self.vector_lock.release()
 
     def clear_graph(self):
         self.vector_lock.acquire()
