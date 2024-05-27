@@ -19,7 +19,7 @@ import datetime
 
 class MainWindow(QtWidgets.QMainWindow):
     update_graph_signal = Signal()
-
+    update_LED_text_signal = Signal()
     def __init__(self):
         super().__init__()
         self.vector_lock = Lock()
@@ -37,6 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
         self.update_graph_signal.connect(self.update_graph)
+        self.update_LED_text_signal.connect(self.update_LED_text)
         monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
         monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
         monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
@@ -202,6 +203,9 @@ class MainWindow(QtWidgets.QMainWindow):
             print(e)
         self.vector_lock.release()
 
+    def update_LED_text(self):
+        self.LED.setText(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+
 
 
 
@@ -248,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
             all_phys = "{0} - {1} - {2} - {3} - {4} - {5}".format(str(pressure),str(waterTempIn),str(waterTempOut),str(He_capsule),str(firstStg),str(secStg))
             self.physLogger.logger.info(all_phys)
             self.LED.setChecked(True)
-            self.LED.setText(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+            self.update_LED_text_signal.emit()
             self.vector_lock.release()
             self.update_graph_signal.emit()
             sleep(self.rate)
