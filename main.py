@@ -34,6 +34,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pressures = []
         self.firstStages = []
         self.secStages = []
+        self.Water_ins = []
 
 
         self.update_graph_signal.connect(self.update_graph)
@@ -120,6 +121,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #pressure_plot.setDownsampling(ds=True,auto=True,mode="subsample")
 
         TemperatureA_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
+        
         TemperatureA_plot.setXLink(pressure_plot)
         TemperatureA_plot.addLegend(offset=(0,0))
         #TemperatureA_plot.setDownsampling(ds=True,auto=True,mode="subsample")
@@ -137,8 +139,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.firstStage_curve = TemperatureA_plot.plot(pen=(0,0,0),name="1st stage")
         self.sectStage_curve = TemperatureB_plot.plot(pen=(0,0,0),name="2nd stage")
 
+
+
         plot_layout.addWidget(TemperatureA_plot)
         plot_layout.addWidget(TemperatureB_plot)
+
+        WaterIn_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
+        WaterIn_plot.setXLink(pressure_plot)
+        WaterIn_plot.addLegend(offset=(0,0))
+        self.Water_in_curve = WaterIn_plot.plot(pen=(0,0,0),name="Water in")
+
+        plot_layout.addWidget(WaterIn_plot)
 
 
         values_form = QtWidgets.QFormLayout()
@@ -190,6 +201,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pressures = []
         self.firstStages = []
         self.secStages = []
+        self.Water_ins = []
         self.vector_lock.release()
 
 
@@ -199,6 +211,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.pressure_curve.setData(self.Time,self.pressures)
             self.firstStage_curve.setData(self.Time,self.firstStages)
             self.sectStage_curve.setData(self.Time,self.secStages)
+            self.Water_in_curve.setData(self.Time,self.Water_ins)
+        
+
         except Exception as e:
             print(e)
         self.vector_lock.release()
@@ -220,6 +235,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.pressures.pop(0)
                 self.firstStages.pop(0)
                 self.secStages.pop(0)
+                self.Water_ins.pop(0)
+
 
 
             now = time.time()
@@ -235,6 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.LED.setChecked(False)
             self.WaterTempOutLine.setText(str(round(waterTempOut,2)))
             self.WaterTempInLine.setText(str(round(waterTempIn, 2)))
+            self.Water_ins.append(waterTempIn)
             self.He_capsuleTempLine.setText(str(round(He_capsule, 2)))
             self.LED.setChecked(True)
             firstStg = self.lakeshore.read_TemperatureA()
