@@ -35,6 +35,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.firstStages = []
         self.secStages = []
         self.Water_ins = []
+        self.Water_outs = []
+        self.HeCapsuls = []
 
 
         self.update_graph_signal.connect(self.update_graph)
@@ -147,7 +149,9 @@ class MainWindow(QtWidgets.QMainWindow):
         WaterIn_plot = pg.PlotWidget(axisItems = {'bottom': pg.DateAxisItem()})
         WaterIn_plot.setXLink(pressure_plot)
         WaterIn_plot.addLegend(offset=(0,0))
-        self.Water_in_curve = WaterIn_plot.plot(pen=(0,0,0),name="Water in")
+        self.Water_in_curve = WaterIn_plot.plot(pen=(0,0,255),name="Water in")
+        self.Water_out_curve = WaterIn_plot.plot(pen=(255,0,0),name="Water out")
+        self.HeCapsul_curve = WaterIn_plot.plot(pen=(0,0,0),name="He Caps")
 
         plot_layout.addWidget(WaterIn_plot)
 
@@ -202,6 +206,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.firstStages = []
         self.secStages = []
         self.Water_ins = []
+        self.Water_outs = []
+        self.HeCapsuls= []
         self.vector_lock.release()
 
 
@@ -212,6 +218,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.firstStage_curve.setData(self.Time,self.firstStages)
             self.sectStage_curve.setData(self.Time,self.secStages)
             self.Water_in_curve.setData(self.Time,self.Water_ins)
+            self.Water_out_curve.setData(self.Time,self.Water_outs)
+            self.HeCapsul_curve.setData(self.Time,self.HeCapsuls)
         
 
         except Exception as e:
@@ -236,6 +244,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.firstStages.pop(0)
                 self.secStages.pop(0)
                 self.Water_ins.pop(0)
+                self.Water_outs.pop(0)
+                self.HeCapsuls.pop(0)
 
 
 
@@ -253,6 +263,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.WaterTempOutLine.setText(str(round(waterTempOut,2)))
             self.WaterTempInLine.setText(str(round(waterTempIn, 2)))
             self.Water_ins.append(waterTempIn)
+            self.Water_outs.append(waterTempOut)
+            self.HeCapsuls.append(He_capsule)
             self.He_capsuleTempLine.setText(str(round(He_capsule, 2)))
             self.LED.setChecked(True)
             firstStg = self.lakeshore.read_TemperatureA()
