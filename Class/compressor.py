@@ -81,3 +81,42 @@ class Compressor():
         else:
             print('something is wrong')
             return (-999,-999,-999)
+
+
+    def check_status(self):
+        if not self.connected:
+            return False
+        self.ser.write(b'$STA3504\r')
+        sleep(30 / 1000)
+        string_Temp = str(self.ser.readline(), 'utf-8')
+
+        if(string_Temp.split(',')[0] == "$STA"):
+            print(string_Temp.split(',')[1])
+            return True
+        else:
+            print('something is wrong.')
+            return False
+
+    def Turn_on(self):
+        if not self.connected:
+            return False
+        self.ser.write(b'$ON177CF\r')
+        sleep(30 / 1000)
+        string_Temp = str(self.ser.readline(), 'utf-8')
+        if (string_Temp.split(',')[0] == "$ON1"):
+            return True
+        else:
+            print("somthing is worng.")
+            return False
+
+    def Turn_off(self):
+        if not self.connected:
+            return False
+        self.ser.write(b'$OFF9188\r')
+        sleep(30 / 1000)
+        string_Temp = str(self.ser.readline(), 'utf-8')
+        if (string_Temp.split(',')[0] == "$OFF"):
+            return True
+        else:
+            print("somthing is worng.")
+            return False

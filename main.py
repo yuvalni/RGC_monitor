@@ -259,6 +259,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.LED.setChecked(True)
             He_capsule,waterTempOut,waterTempIn = self.compressor.read_water_temperature()
+            self.compressor.check_status()
+
             self.LED.setChecked(False)
             self.WaterTempOutLine.setText(str(round(waterTempOut,2)))
             self.WaterTempInLine.setText(str(round(waterTempIn, 2)))
