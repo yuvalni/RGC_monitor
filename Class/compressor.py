@@ -91,11 +91,18 @@ class Compressor():
         string_Temp = str(self.ser.readline(), 'utf-8')
 
         if(string_Temp.split(',')[0] == "$STA"):
-            print(string_Temp.split(',')[1])
+            print("{0:016b}".format(int(string_Temp.split(',')[1])))
+
             return True
         else:
             print('something is wrong.')
             return False
+
+
+    def translate_status(selfs,status):
+        On_status = bool(status & 0b0000000000000001)
+        solenoid_status = bool(status & 0b0000000100000000)
+        #Alarms = bool(status & 0b0000000100000000)
 
     def Turn_on(self):
         if not self.connected:
