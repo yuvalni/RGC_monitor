@@ -213,7 +213,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def change_alarm_LED(self,alarm_num,state):
         if state:
             requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,"RGC alarm.",1711572))
-
         self.alarmLEDS[alarm_num].setChecked(bool(state))
 
 
@@ -282,6 +281,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.LED.setChecked(True)
             He_capsule,waterTempOut,waterTempIn = self.compressor.read_water_temperature()
+
+            if float(waterTempOut)>50:
+                requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,
+                                                                                                           "Water out  > 50 alarm.",
+                                                                                                           1711572))
+
             alarms,ONstatus = self.compressor.check_status()
             if alarms.any():
                 print("alarm!")
