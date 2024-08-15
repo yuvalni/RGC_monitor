@@ -1,7 +1,9 @@
-from Class.compressor import Compressor as Compressor
-from Class.lakeshore import Lakeshore as LakeShore
-#from Class.compressor import MockUp as Compressor
-#from Class.lakeshore import MockUp as LakeShore
+#from Class.compressor import Compressor as Compressor
+#from Class.lakeshore import Lakeshore as LakeShore
+
+from Class.compressor import MockUp as Compressor
+from Class.lakeshore import MockUp as LakeShore
+
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import Class.Loggers as Logs
@@ -15,7 +17,8 @@ from time import sleep
 
 import datetime
 
-
+class LED(QtWidgets.QRadioButton):
+    pass
 
 class MainWindow(QtWidgets.QMainWindow):
     update_graph_signal = Signal()
@@ -53,7 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         cw = QtWidgets.QWidget()
         self.setCentralWidget(cw)
 
-
+            
         Hor_layout =  QtWidgets.QHBoxLayout()
         cw.setLayout(Hor_layout)
 
@@ -191,6 +194,55 @@ class MainWindow(QtWidgets.QMainWindow):
 
         MonitorVbox.addLayout(values_form)
 
+        ErrorLED_panel = QtWidgets.QHBoxLayout()
+        LED_group = QtWidgets.QGroupBox("Alarms")
+        LED_group.setStyleSheet("QGroupBox{font: 12px;}")
+        LED_group.setLayout(ErrorLED_panel)
+        
+        self.WaterTempAlarm = LED()
+        self.WaterTempAlarm.setEnabled(False)
+        self.WaterTempAlarm.setChecked(False)
+        self.WaterTempAlarm.setToolTip("Water Temperature")
+        ErrorLED_panel.addWidget(self.WaterTempAlarm)
+
+        self.WaterFlowAlarm = LED()
+        self.WaterFlowAlarm.setEnabled(False)
+        self.WaterFlowAlarm.setChecked(False)
+        self.WaterFlowAlarm.setToolTip("Water Flow")
+        ErrorLED_panel.addWidget(self.WaterFlowAlarm)
+
+        self.MotorTempAlarm = LED()
+        self.MotorTempAlarm.setEnabled(False)
+        self.MotorTempAlarm.setChecked(False)
+        self.MotorTempAlarm.setToolTip("Motor Temperature")
+        ErrorLED_panel.addWidget(self.MotorTempAlarm)
+
+        self.OilAlarm = LED()
+        self.OilAlarm.setEnabled(False)
+        self.OilAlarm.setChecked(False)
+        self.OilAlarm.setToolTip("Oil Temperature")
+        ErrorLED_panel.addWidget(self.OilAlarm)
+
+        self.OilAlarm = LED()
+        self.OilAlarm.setEnabled(False)
+        self.OilAlarm.setChecked(False)
+        self.OilAlarm.setToolTip("Oil Temperature")
+        ErrorLED_panel.addWidget(self.OilAlarm)
+
+        self.Alarm1 = LED()
+        self.Alarm1.setEnabled(False)
+        self.Alarm1.setChecked(False)
+        self.Alarm1.setToolTip("Alarm1")
+        ErrorLED_panel.addWidget(self.Alarm1)
+
+        self.Alarm2 = LED()
+        self.Alarm2.setEnabled(False)
+        self.Alarm2.setChecked(False)
+        self.Alarm2.setToolTip("Alarm2")
+        ErrorLED_panel.addWidget(self.Alarm2)
+
+        MonitorVbox.addWidget(LED_group)
+
     def btn_press(self):
         self.vector_lock.acquire()
         self.rate = float(self.poll_rate.text())
@@ -295,6 +347,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = pg.mkQApp("RGC monitor")
+    app.setStyleSheet("""
+    LED {
+        font-size: 16px;
+        color: blue;
+    }
+    LED::indicator {
+        width: 10px;
+        height: 10px;
+    }
+    LED::indicator:unchecked {
+        background-color: lightgreen;
+    }
+    LED::indicator:checked {
+        background-color: red;
+    }
+    """)
     win = MainWindow()
 
     update_thread = Thread(target=win.update_all,daemon=True)
