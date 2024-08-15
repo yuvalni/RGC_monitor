@@ -3,6 +3,8 @@ from time import sleep
 import serial
 import logging
 import random
+import numpy as np
+from enum import Enum
 
 class MockUp():
     def __init__(self):
@@ -19,12 +21,24 @@ class MockUp():
 
 
 class Compressor():
+
+    class State(Enum):
+        LocalOff = 0
+        LocalOn = 1
+        RemoteOff = 2
+        RemoteOn = 3
+        ColdHeadRun = 4
+        ColdHeadPause = 5
+        FaultOff = 6
+        OilFaultOff = 7
+
     def __init__(self, port='COM9', timeout=1): #rate in seconds
         self.logger = logging.getLogger('compressor')
         self.port = port
         self.pressure = -999
         self.timeout = timeout
         self.connected = False
+
 
         try:
             self.ser = serial.Serial(self.port, timeout=self.timeout,baudrate=9600)
@@ -92,17 +106,26 @@ class Compressor():
 
         if(string_Temp.split(',')[0] == "$STA"):
             print("{0:016b}".format(int(string_Temp.split(',')[1])))
-
+            self.translate_status("{0:016b}".format(int(string_Temp.split(',')[1])))
             return True
         else:
             print('something is wrong.')
             return False
 
 
-    def translate_status(selfs,status):
-        On_status = bool(status & 0b0000000000000001)
-        solenoid_status = bool(status & 0b0000000100000000)
-        #Alarms = bool(status & 0b0000000100000000)
+    def translate_status(self,status):
+        boolean_array = np.array(list(status), dtype=int).astype(bool)
+        #print(boolean_array)
+        On_status = boolean_array[0]
+        Solenoid_status = boolean_array[8]
+
+        #On_status = bool(status & 0b0000000000000001)
+        #solenoid_status = bool(status & 0b0000000100000000)
+        Alarms = boolean_array[1:8] #Motor temperature, phase/fuze,Helium Temp, WaterTemperature,Water Flow,Oil Level, pressure
+        #print(Alarms)
+
+        state_number = int(status[-(9 + 3):-9] if 9 > 0 else binary_str[-3:], 2)
+        #print(self.State(state_number))
 
     def Turn_on(self):
         if not self.connected:
