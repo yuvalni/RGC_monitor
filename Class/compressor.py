@@ -18,6 +18,15 @@ class MockUp():
         return (17.5 + random.random(),18 + random.random(),16 + random.random())
 
 
+    def check_status(self):
+            pass
+
+
+    def translate_status(selfs,status):
+        On_status = bool(status & 0b0000000000000001)
+        solenoid_status = bool(status & 0b0000000100000000)
+        #Alarms = bool(status & 0b0000000100000000)
+
 class Compressor():
     def __init__(self, port='COM9', timeout=1): #rate in seconds
         self.logger = logging.getLogger('compressor')
