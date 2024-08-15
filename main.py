@@ -1,6 +1,6 @@
 from Class.compressor import Compressor as Compressor
 from Class.lakeshore import Lakeshore as LakeShore
-
+import requests
 #from Class.compressor import MockUp as Compressor
 #from Class.lakeshore import MockUp as LakeShore
 
@@ -211,6 +211,9 @@ class MainWindow(QtWidgets.QMainWindow):
         MonitorVbox.addWidget(LED_group)
 
     def change_alarm_LED(self,alarm_num,state):
+        if state:
+            requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,"RGC alarm.",1711572))
+
         self.alarmLEDS[alarm_num].setChecked(bool(state))
 
 
