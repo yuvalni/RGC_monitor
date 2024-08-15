@@ -228,7 +228,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.OilAlarm.setChecked(False)
         self.OilAlarm.setToolTip("Oil Temperature")
         ErrorLED_panel.addWidget(self.OilAlarm)
-        
+
+        self.Alarm1 = LED()
+        self.Alarm1.setEnabled(False)
+        self.Alarm1.setChecked(False)
+        self.Alarm1.setToolTip("Alarm1")
+        ErrorLED_panel.addWidget(self.Alarm1)
+
+        self.Alarm2 = LED()
+        self.Alarm2.setEnabled(False)
+        self.Alarm2.setChecked(False)
+        self.Alarm2.setToolTip("Alarm2")
+        ErrorLED_panel.addWidget(self.Alarm2)
+
         MonitorVbox.addWidget(LED_group)
 
     def btn_press(self):
