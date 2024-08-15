@@ -21,7 +21,7 @@ class MockUp():
 
 
     def check_status(self):
-            pass
+            return np.random.choice(a=[False, True], size=7, p=[0.5, 0.5]),True
 
 
     def translate_status(selfs,status):
@@ -114,12 +114,15 @@ class Compressor():
         string_Temp = str(self.ser.readline(), 'utf-8')
 
         if(string_Temp.split(',')[0] == "$STA"):
-            print("{0:016b}".format(int(string_Temp.split(',')[1])))
-            self.translate_status("{0:016b}".format(int(string_Temp.split(',')[1])))
-            return True
+            #self.translate_status()
+            boolean_array = np.array(list("{0:016b}".format(int(string_Temp.split(',')[1]))), dtype=int).astype(bool)
+            ONstatus = boolean_array[0]
+            alarms = boolean_array[1:8]
+            return alarms,ONstatus
         else:
             print('something is wrong.')
             return False
+
 
 
     def translate_status(self,status):

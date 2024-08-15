@@ -1,8 +1,8 @@
-#from Class.compressor import Compressor as Compressor
-#from Class.lakeshore import Lakeshore as LakeShore
+from Class.compressor import Compressor as Compressor
+from Class.lakeshore import Lakeshore as LakeShore
 
-from Class.compressor import MockUp as Compressor
-from Class.lakeshore import MockUp as LakeShore
+#from Class.compressor import MockUp as Compressor
+#from Class.lakeshore import MockUp as LakeShore
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -198,50 +198,21 @@ class MainWindow(QtWidgets.QMainWindow):
         LED_group = QtWidgets.QGroupBox("Alarms")
         LED_group.setStyleSheet("QGroupBox{font: 12px;}")
         LED_group.setLayout(ErrorLED_panel)
-        
-        self.WaterTempAlarm = LED()
-        self.WaterTempAlarm.setEnabled(False)
-        self.WaterTempAlarm.setChecked(False)
-        self.WaterTempAlarm.setToolTip("Water Temperature")
-        ErrorLED_panel.addWidget(self.WaterTempAlarm)
-
-        self.WaterFlowAlarm = LED()
-        self.WaterFlowAlarm.setEnabled(False)
-        self.WaterFlowAlarm.setChecked(False)
-        self.WaterFlowAlarm.setToolTip("Water Flow")
-        ErrorLED_panel.addWidget(self.WaterFlowAlarm)
-
-        self.MotorTempAlarm = LED()
-        self.MotorTempAlarm.setEnabled(False)
-        self.MotorTempAlarm.setChecked(False)
-        self.MotorTempAlarm.setToolTip("Motor Temperature")
-        ErrorLED_panel.addWidget(self.MotorTempAlarm)
-
-        self.OilAlarm = LED()
-        self.OilAlarm.setEnabled(False)
-        self.OilAlarm.setChecked(False)
-        self.OilAlarm.setToolTip("Oil Temperature")
-        ErrorLED_panel.addWidget(self.OilAlarm)
-
-        self.OilAlarm = LED()
-        self.OilAlarm.setEnabled(False)
-        self.OilAlarm.setChecked(False)
-        self.OilAlarm.setToolTip("Oil Temperature")
-        ErrorLED_panel.addWidget(self.OilAlarm)
-
-        self.Alarm1 = LED()
-        self.Alarm1.setEnabled(False)
-        self.Alarm1.setChecked(False)
-        self.Alarm1.setToolTip("Alarm1")
-        ErrorLED_panel.addWidget(self.Alarm1)
-
-        self.Alarm2 = LED()
-        self.Alarm2.setEnabled(False)
-        self.Alarm2.setChecked(False)
-        self.Alarm2.setToolTip("Alarm2")
-        ErrorLED_panel.addWidget(self.Alarm2)
+        self.alarmLEDS = []
+        alarms_strings = ["Motor Temperature","Phase/Fuze","He Temperature","Water Temperature","Water Flow","Oil Level","Pressure"]
+        for i in range(7):
+            _led = LED()
+            _led.setChecked(False)
+            _led.setEnabled(False)
+            _led.setToolTip(alarms_strings[i])
+            self.alarmLEDS.append(_led)
+            ErrorLED_panel.addWidget(self.alarmLEDS[-1])
 
         MonitorVbox.addWidget(LED_group)
+
+    def change_alarm_LED(self,alarm_num,state):
+        self.alarmLEDS[alarm_num].setChecked(bool(state))
+
 
     def btn_press(self):
         self.vector_lock.acquire()
@@ -282,9 +253,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.LED.setText(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
 
-
-
-
     def update_all(self):
         print("update started")
         while True:
@@ -311,7 +279,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.LED.setChecked(True)
             He_capsule,waterTempOut,waterTempIn = self.compressor.read_water_temperature()
-            self.compressor.check_status()
+            alarms,ONstatus = self.compressor.check_status()
+            if alarms.any():
+                print("alarm!")
+            for i in range(7):
+                self.change_alarm_LED(i,alarms[i])
+
 
             self.LED.setChecked(False)
             self.WaterTempOutLine.setText(str(round(waterTempOut,2)))
