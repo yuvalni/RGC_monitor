@@ -40,6 +40,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.Water_ins = []
         self.Water_outs = []
         self.HeCapsuls = []
+        self.alarm_ON = True
 
 
         self.update_graph_signal.connect(self.update_graph)
@@ -115,6 +116,11 @@ class MainWindow(QtWidgets.QMainWindow):
         clear_graph_Btn = QtWidgets.QPushButton("clear graph")
         clear_graph_Btn.clicked.connect(self.clear_graph)
         SettingsVBOX.addWidget(clear_graph_Btn)
+
+        alarm_on_CB = QtWidgets.QCheckBox("alarm on")
+        alarm_on_CB.setChecked(True)
+        alarm_on_CB.clicked.connect(self.toggled_alarm)
+        SettingsVBOX.addWidget(alarm_on_CB)
 
 
 
@@ -211,10 +217,13 @@ class MainWindow(QtWidgets.QMainWindow):
         MonitorVbox.addWidget(LED_group)
 
     def change_alarm_LED(self,alarm_num,state):
-        if state:
+        if state and not self.alarmLEDS[alarm_num].isChecked():
+            print("alarm sent to whatsapp.")
             requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,"RGC alarm.",1711572))
         self.alarmLEDS[alarm_num].setChecked(bool(state))
 
+    def toggled_alarm(self,checked):
+        self.alarm_ON = checked
 
     def btn_press(self):
         self.vector_lock.acquire()
@@ -281,15 +290,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
             self.LED.setChecked(True)
             He_capsule,waterTempOut,waterTempIn = self.compressor.read_water_temperature()
-
-            if float(waterTempOut)>50:
-                requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,
+            if self.alarm_ON:
+                if float(waterTempOut)>50:
+                    requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,
                                                                                                            "Water out  > 50 alarm.",
                                                                                                            1711572))
 
             alarms,ONstatus = self.compressor.check_status()
             if alarms.any():
-                print("alarm!")
+                #print("alarm!")
+                pass
             for i in range(7):
                 self.change_alarm_LED(i,alarms[i])
 
