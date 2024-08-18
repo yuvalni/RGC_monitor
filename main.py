@@ -217,7 +217,7 @@ class MainWindow(QtWidgets.QMainWindow):
         MonitorVbox.addWidget(LED_group)
 
     def change_alarm_LED(self,alarm_num,state):
-        if state and not self.alarmLEDS[alarm_num].isChecked():
+        if state and not self.alarmLEDS[alarm_num].isChecked() and self.alarm_ON:
             print("alarm sent to whatsapp.")
             requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,"RGC alarm.",1711572))
         self.alarmLEDS[alarm_num].setChecked(bool(state))
