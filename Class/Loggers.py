@@ -57,8 +57,9 @@ class MyTimedRotatingFileHandler(TimedRotatingFileHandler):
                 copyfile(s, dst)
                 print("File copied successfully:" + s)
 
-            except:
-                print("Error occurred while copying file.")
+
+            except Exception as e:
+                print(e)
 
         super(MyTimedRotatingFileHandler, self).doRollover()
         if self._log is not None and self._header != "":
