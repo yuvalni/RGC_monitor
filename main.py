@@ -334,8 +334,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 
-
-
 if __name__ == "__main__":
     app = pg.mkQApp("RGC monitor")
     app.setStyleSheet("""
@@ -358,6 +356,7 @@ if __name__ == "__main__":
 
     update_thread = Thread(target=win.update_all,daemon=True)
     update_thread.start()
+
 
     win.resize(600,400)
     win.setWindowTitle('RGC monitoring')
