@@ -54,12 +54,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.createLayout()
 
     def createLayout(self):
+
+        main = QtWidgets.QWidget()
+        main_layout = QtWidgets.QVBoxLayout(main)
+        self.setCentralWidget(main)
+        self.tabs = QtWidgets.QTabWidget()
+        main_layout.addWidget(self.tabs)
+
+
         cw = QtWidgets.QWidget()
-        self.setCentralWidget(cw)
+        #self.setCentralWidget(cw)
 
             
         Hor_layout =  QtWidgets.QHBoxLayout()
         cw.setLayout(Hor_layout)
+        self.tabs.addTab(cw, "Monitor")
+
 
         Ver_layout = QtWidgets.QVBoxLayout()
         Hor_layout.addLayout(Ver_layout)
