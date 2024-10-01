@@ -14,8 +14,23 @@ from PySide6.QtCore import Qt,QObject,Signal
 from threading import Thread, Lock
 import time
 from time import sleep
+import sys
+
+from pymeasure.display.widgets.log_widget import LogWidget
 
 import datetime
+
+
+class LogRedirector:
+    def __init__(self, logger):
+        self.logger = logger
+
+    def write(self, message):
+        if message.strip():  # Ignore empty messages
+            self.logger.info(message.strip())
+
+    def flush(self):  # Required for compatibility
+        pass
 
 class LED(QtWidgets.QRadioButton):
     pass
@@ -43,6 +58,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.alarm_ON = True
 
 
+
+
         self.update_graph_signal.connect(self.update_graph)
         self.update_LED_text_signal.connect(self.update_LED_text)
         monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
@@ -51,7 +68,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
                                monitoring_formatter, monitoring_headers, monitoring_backup)
 
+
+
         self.createLayout()
+
+        log = logging.getLogger(__name__)
+        log.addHandler(logging.NullHandler())
+        logging.getLogger().addHandler(self.log_widget.handler)  # needs to be in Qt context?
+        log.setLevel(logging.INFO)
+        log.info("ManagedWindow connected to logging")
+        sys.stdout = LogRedirector(log)
+
 
     def createLayout(self):
 
@@ -68,8 +95,11 @@ class MainWindow(QtWidgets.QMainWindow):
             
         Hor_layout =  QtWidgets.QHBoxLayout()
         cw.setLayout(Hor_layout)
-        self.tabs.addTab(cw, "Monitor")
 
+
+        self.tabs.addTab(cw, "Monitor")
+        self.log_widget = LogWidget("Experiment Log")
+        self.tabs.addTab(self.log_widget,"log")
 
         Ver_layout = QtWidgets.QVBoxLayout()
         Hor_layout.addLayout(Ver_layout)
