@@ -134,7 +134,9 @@ class MainWindow(QtWidgets.QMainWindow):
         monitor_group.setLayout(MonitorVbox)
         Ver_layout.addWidget(monitor_group)
         Ver_layout.addStretch()
-        Ver_layout.addWidget(Settings_group)
+
+        #Ver_layout.addWidget(Settings_group)
+        self.tabs.addTab(Settings_group,"settings")
 
         settings_form = QtWidgets.QFormLayout()
 
