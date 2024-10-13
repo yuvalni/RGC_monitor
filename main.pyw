@@ -64,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.update_LED_text_signal.connect(self.update_LED_text)
         monitoring_formatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
         monitoring_headers = 'Compressor pressure (psi) - Water Temperature (C) - first stage (K) -  second stage (K)'
-        monitoring_backup = "C:/Users/Scienta Omicron/OneDrive - Technion/ARPES Data/Monitoring"
+        monitoring_backup = r"C:\Users\Scienta Omicron\OneDrive - Technion\Documents\RGC_monitor\logs\monitoring\backup"
         self.physLogger = Logs.MyLogger('monitoring', "./logs/Monitoring/monitoring.log", logging.INFO, 'midnight', 1, 30,
                                monitoring_formatter, monitoring_headers, monitoring_backup)
 
@@ -161,6 +161,10 @@ class MainWindow(QtWidgets.QMainWindow):
         alarm_on_CB.setChecked(True)
         alarm_on_CB.clicked.connect(self.toggled_alarm)
         SettingsVBOX.addWidget(alarm_on_CB)
+
+        clear_alarms_Btn = QtWidgets.QPushButton("clear alarms")
+        clear_alarms_Btn.clicked.connect(self.clear_alarm)
+        SettingsVBOX.addWidget(clear_alarms_Btn)
 
 
 
@@ -259,8 +263,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def change_alarm_LED(self,alarm_num,state):
         if state and not self.alarmLEDS[alarm_num].isChecked() and self.alarm_ON:
             print("alarm sent to whatsapp.")
-            requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}&apikey={2}".format(972526031129,"RGC alarm.",1711572))
+            requests.get("https://api.callmebot.com/whatsapp.php?phone={0}&text={1}: {2} &apikey={3}".format(972526031129,"RGC alarm.",self.compressor.State(alarm_num).name,1711572))
         self.alarmLEDS[alarm_num].setChecked(bool(state))
+        if state:
+            self.compressor.Reset_error() # maybe wait for a while before reseting?
 
     def toggled_alarm(self,checked):
         self.alarm_ON = checked
@@ -284,6 +290,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.HeCapsuls= []
         self.vector_lock.release()
 
+    def clear_alarm(self):
+        self.compressor.Reset_error()
 
     def update_graph(self):
         self.vector_lock.acquire()
